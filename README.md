@@ -1,40 +1,31 @@
 # VarioPro_NVDA_driver
 NVDA driver for BAUM VarioPro Braille display and its modules
 More information about can be found here:
-http://www.baum.de/en/products/braille-displays/variopro-80/
+https://www.visiobraille.de/index.php?article_id=24&clang=2
 
 Although NVDA already includes a driver for some of the BAUM Braille displays, 
 we choose to make a separate driver for the BAUM VarioPro product.
 This is mainly due to the fact that VarioPro has also additional connectible modules.
 
 ## How to install this driver in NVDA
-Ensure that you have installed the latest version of the NVDA screen reader. 
-Download the baumVarioPro.py file from this page.
-Copy the baumVarioPro.py file to your %appdata%\nvda\brailleDisplayDrivers folder.
-
-
-## New in the version from 2017.10.13
-1. Changed the code to adhere to a better object oriented architecture:
-     - created a base class VarioProModule which is inherited by the classes
-created for each VarioPro module;
-     - the functions that handle the input of each module are now implemented
-in a separated class that inherits from the base VarioProModule class;
-     - the code might not be as clear as it was in the previous flat
-implementation.
-2. Added some code improvements suggested by Leonard:
-     - using hwIo.Serial's waitForRead method instead of time.sleep (which
-locks the main thread of NVDA);
-     - using xrange objects instead of the range objects when creating ranges
-of values used in the "for" loops;
-     - added description information to some functions.
-3. Added the possibility to output on the Status and Telephone modules.
-     But we still need to find a method to make NVDA send text specifically
-for the Status and Telephone Braille modules.
-     Regarding this issue please read the notes bellow.
-
+Ensure that you have installed the latest version of the NVDA screen reader (2019.3 or above). 
+Download the "BaumVarioProDriver-2020-1.nvda-addon" file from this page.
+In NVDA's contextual menu go to "Add-ons Manager" located in the "Tools" section.
+Press the "Install..." button, navigate to the location where you downloaded the "BaumVarioProDriver-2020-1.nvda-addon" file
+and press the "Open" button.
+Then press the "Yes" button to install the add-on.
+Close the "Add-ons Manager" window and choose "Yes" to restart NVDA.
+Connect the VarioPro device to the computer.
+Go to Settings  and under the Braille section change the Braille display to "Baum VarioPro braille displays".
+ 
+## New in the version from 2020.01.22
+1. Modified the driver to work with NVDA 2019.3 and above.
+2. Packed the driver as a NVDA addon.
 
 ## Notes
-1. Braille output on the Status and Telephone modules The NVDA has no support
+1. This version of the driver is no longer compatible with the older NVDA versions which are based on Python 2.
+ 
+2. Braille output on the Status and Telephone modules The NVDA has no support
 for using multiple Braille displays at the same time.
 Despite of this limitation, we tried to find solutions to make use also of
 the Status and Telephone modules Braille output.
@@ -72,7 +63,3 @@ to the driver.
 
 Any working solutions to have Braille output also on the connected Status or
 Telephone modules are appreciated.
-
-2. I still need help with the validation of the currently assigned NVDA input
-gestures for the Status and the Telephone module, and also with suggestions
-for the keys combinations left unassigned.

@@ -3,7 +3,7 @@
 #Description:
 #	BAUM VarioPro driver for NVDA.
 #	This file is covered by the GNU General Public License.
-#Copyright: (C) 2017 BAUM Engineering SRL
+#Copyright: (C) 2020 BAUM Engineering SRL
 #Author: 
 #	Florin Trutiu (ft@baum.ro)
 #Versions:
@@ -24,21 +24,19 @@
 #              - added some code improvements suggested by Leonard de Ruijter:
 #                   - using hwIo.Serial's waitForRead method instead of time.sleep (which locks the main thread of NVDA)
 #                   - using xrange objects instead of the range objects
-#                   - added description to some functions                     
+#                   - added description to some functions
+#   2020.01.22 - converted the code to work with Python3                     
 #Note: Added the possibility to output on the Status and Telephone modules. 
 #      But we still need to find a method to make NVDA send text specifically for the Status and Telephone Braille modules.
 
 import time
 from collections import OrderedDict
-from cStringIO import StringIO
 import hwPortUtils
 import braille
 import inputCore
 from logHandler import log
 import brailleInput
 import hwIo
-
-from serial import *
 import threading
 from struct import unpack
 
@@ -155,12 +153,12 @@ class VarioProMainModule80(VarioProModule):
             pass
 
     def process_main_wheel_rotation(self, wheels):
-        for wi in xrange(len(wheels)):
+        for wi in range(len(wheels)):
             w = wheels[wi]
-            ws = unpack("b", chr(w))[0]   
+            ws = unpack("b", bytes([w]))[0]
             if ws != 0:
                 sign = lambda x: -1 if x < 0 else 1
-                for i in xrange(0, ws, sign(ws)):
+                for i in range(0, ws, sign(ws)):
                     if ws > 0:
                         wd = {BAUM_WHEELS_UP : 1 << wi}
                     else:
@@ -168,7 +166,7 @@ class VarioProMainModule80(VarioProModule):
                 try:
                     ig = InputGesture(wd)
                     inputCore.manager.executeGesture(ig)
-                except inputCore.NoInputGestureAction as e:
+                except inputCore.NoInputGestureAction:
                     pass
 
     def process_main_wheel_buttons(self, wp):
@@ -187,8 +185,8 @@ class VarioProMainModule80(VarioProModule):
         if stat & 0x08: # routing keys changed
             # Put R keys bitmap in a looong word (this is anyway what NVDA expects, and easier to compare and assign)
             r_keys = 0
-            klen = self.number_cells/8 
-            for i in xrange(klen): 
+            klen = int(self.number_cells/8) 
+            for i in range(klen): 
                 if self.module_type == VP_MAIN_80:
                     r_keys |= pkt[i + 8] << (i * 8)
                 else:
@@ -223,9 +221,9 @@ class VarioProTasoModule(VarioProModule):
         log.info("TASO module initialized")
 
     def process_taso_wheel_rotation(self, wd):
-        ws = unpack("b", chr(wd))[0]
+        ws = unpack("b", bytes([wd]))[0]
         sign = lambda x: -1 if x < 0 else 1  
-        for i in xrange(0, ws, sign(ws)):
+        for i in range(0, ws, sign(ws)):
             if ws > 0:
                 wd = {BAUM_TASO_WHEEL: (1 << 1)} 
             else:
@@ -233,30 +231,30 @@ class VarioProTasoModule(VarioProModule):
             try:
                 ig = InputGesture(wd)
                 inputCore.manager.executeGesture(ig)
-            except inputCore.NoInputGestureAction as e:
+            except inputCore.NoInputGestureAction:
                 pass
 
     def process_taso_vertical_slider_position(self, val):
         vs = abs(self.prev_tvs - val)
         if vs:
-            for i in xrange (0, vs):
+            for i in range (0, vs):
                 vsd = {BAUM_TASO_VERTICAL_SLIDER: (1 << 1) if val < self.prev_tvs else 1}
                 try:
                     ig = InputGesture(vsd)
                     inputCore.manager.executeGesture(ig)
-                except inputCore.NoInputGestureAction as e:
+                except inputCore.NoInputGestureAction:
                     pass
         self.prev_tvs = val	
 
     def process_taso_horizontal_slider_position(self, val):
         hs = abs(self.prev_ths - val)
         if hs:
-            for i in xrange (0, hs):
+            for i in range (0, hs):
                 hsd = {BAUM_TASO_HORIZONTAL_SLIDER: (1 << 1) if val > self.prev_ths else 1}
                 try:
                     ig = InputGesture(hsd)
                     inputCore.manager.executeGesture(ig)
-                except inputCore.NoInputGestureAction as e:
+                except inputCore.NoInputGestureAction:
                     pass
         self.prev_ths = val		
 
@@ -265,10 +263,10 @@ class VarioProTasoModule(VarioProModule):
         #also we can use the the # and * keys as shift keys
         tnckeys	= tk[0] | (tk[1] << 8) | ((tk[2] & 0x07) << 12)	
         tswkeys	= (tk[2] >> 5) & 0x07
-
+        
         if self.prev_tnckeys != tnckeys:
             if tnckeys: # only key presses
-                tnckeysd = {BAUM_TASO_NC_KEYS:  tnckeys} 		
+                tnckeysd = {BAUM_TASO_NC_KEYS:  tnckeys}
                 try:
                     ig = InputGesture(tnckeysd)
                     inputCore.manager.executeGesture(ig)
@@ -356,9 +354,9 @@ class VarioProTelephoneModule(VarioProModule):
         self.prev_tm_kcw_keys = tm_kcw_keys
 
     def process_telephone_module_wheel_rotation(self, wd):
-        ws = unpack("b", chr(wd))[0]
+        ws = unpack("b", bytes([wd]))[0]
         sign = lambda x: -1 if x < 0 else 1  
-        for i in xrange(0, ws, sign(ws)):
+        for i in range(0, ws, sign(ws)):
             if ws > 0:
                 wd = {BAUM_TELEPHONE_WHEEL: (1 << 1)} 
             else:
@@ -366,7 +364,7 @@ class VarioProTelephoneModule(VarioProModule):
             try:
                 ig = InputGesture(wd)
                 inputCore.manager.executeGesture(ig)
-            except inputCore.NoInputGestureAction as e:
+            except inputCore.NoInputGestureAction:
                 pass		
 
     def process_telephone_module_data_packet(self, pkt):
@@ -459,11 +457,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
                     if self._dev.is_open(): self._dev.close()
                 self._dev = hwIo.Serial(port, baudrate=BAUD_RATE, timeout=TIMEOUT, writeTimeout=TIMEOUT, onReceive=self._onReceive)
                 self.vp_query_modules()
-                for i in xrange(10): # wait for dev arrival
+                for i in range(10): # wait for dev arrival
                     self._dev.waitForRead(TIMEOUT)
                     if self.numCells:
                         break
-                else:
+                    else:
                         log.error("Device arrival timeout")
         except Exception as e:
             log.error(e)
@@ -495,12 +493,11 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
         if depl == 0x1B: 
             fpkt.append(depl)
         fpkt.extend(dep)
-        ts = "".join(map(chr, fpkt))
-        self._dev.write(ts)
+        self._dev.write(fpkt)        
 
     def vp_query_modules(self):
         #For query the Device-ID and Serial Number must be 0 
-        payload = bytearray("\x00\x00\x00\x00\x04")		
+        payload = bytearray(b"\x00\x00\x00\x00\x04")
         self.send_packet(ord(BAUM_VP_DEVICE_DETECTION), payload) 		
 
     def acknowledge_device_arrival(self, module_info):
@@ -533,8 +530,8 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
             m = self.connected_modules[tuple(pkt[2:6])] 
             try:
                 m.input_handler(pkt[6:]) # call the appropriate packet handler for module
-            except Exception as e:
-                log.error("module not connected or not supported")  
+            except Exception:
+                log.error(f"module not connected or not supported")  
         else:
             log.info("invalid VP pkt")
 
@@ -559,7 +556,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
             self.vp_pkt.append(b)
             self.vp_payload_len -= 1
             if self.vp_payload_len == 0:
-                self.process_packet(self.vp_pkt)
+                self.process_packet(bytearray(self.vp_pkt))
                 self.bp_sm_state = self.VPS_IDLE
 
     def decode_escape_transport(self, data): # ESC transport decoding state machine
@@ -688,9 +685,9 @@ class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGestu
         self.keysDown = dict(keysDown)
 
         self.keyNames = names = set()
-        for group, groupKeysDown in keysDown.iteritems():
+        for group, groupKeysDown in keysDown.items():
             if group == BAUM_ROUTING_KEYS:
-                for index in xrange(braille.handler.display.numCells):
+                for index in range(braille.handler.display.numCells):
                     if groupKeysDown & (1 << index):
                         self.routingIndex = index
                         names.add("routing")
@@ -699,5 +696,4 @@ class InputGesture(braille.BrailleDisplayGesture, brailleInput.BrailleInputGestu
                for index, name in enumerate(KEY_NAMES[group]):
                     if groupKeysDown & (1 << index):
                         names.add(name)
-
         self.id = "+".join(names)
