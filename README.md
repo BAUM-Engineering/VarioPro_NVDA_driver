@@ -1,23 +1,27 @@
 # VarioPro_NVDA_driver
 NVDA driver for BAUM VarioPro Braille display and its modules
 More information about can be found here:
-https://www.visiobraille.de/index.php?article_id=24&clang=2
+https://www.visiobraille.de/index.php?article_id=23&clang=2
 
 Although NVDA already includes a driver for some of the BAUM Braille displays, 
 we choose to make a separate driver for the BAUM VarioPro product.
 This is mainly due to the fact that VarioPro has also additional connectible modules.
 
 ## How to install this driver in NVDA
-* Ensure that you have installed the latest version of the NVDA screen reader (2019.3 or above).
-* Download the "BaumVarioProDriver-2020-1.nvda-addon" file from this page.
+* Ensure that you have installed the latest version of the NVDA screen reader (2021.1 or above).
+* Download the "BaumVarioProDriver-2021-1.nvda-addon" file from this page.
 * In NVDA's contextual menu go to "Add-ons Manager" located in the "Tools" section.
 * Press the "Install..." button, navigate to the location where you downloaded the "BaumVarioProDriver-2020-1.nvda-addon" file and press the "Open" button.
 * Then press the "Yes" button to install the add-on.
 * Close the "Add-ons Manager" window and choose "Yes" to restart NVDA.
 * Connect the VarioPro device to the computer.
 * Go to Settings  and under the Braille section change the Braille display to "Baum VarioPro braille displays".
- 
-## New in the version from 2020.01.22
+
+## New in version from 2021.07.21
+1. Modified the driver addon to work with NVDA 2021.1 and above.
+2. Fixed a bug that made the driver crash if a non assigned device keys combination is pressed.
+
+## Version from 2020.01.22
 1. Modified the driver to work with NVDA 2019.3 and above.
 2. Packed the driver as a NVDA addon.
 
