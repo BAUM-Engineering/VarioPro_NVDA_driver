@@ -28,6 +28,7 @@
 #   2020.01.22 - converted the code to work with Python3                     
 #Note: Added the possibility to output on the Status and Telephone modules. 
 #      But we still need to find a method to make NVDA send text specifically for the Status and Telephone Braille modules.
+#   2021.07.21 - fix crash if a non assigned device keys combination is pressed.
 
 import time
 from collections import OrderedDict
@@ -139,7 +140,7 @@ class VarioProMainModule80(VarioProModule):
         except inputCore.NoInputGestureAction:
             pass
 
-        self.cumul_d_keys = 0;
+        self.cumul_d_keys = 0
 
     def process_main_routing_keys(self, r_keys):
         """Process routing keys as a bitmap of keys"""
@@ -457,12 +458,12 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
                     if self._dev.is_open(): self._dev.close()
                 self._dev = hwIo.Serial(port, baudrate=BAUD_RATE, timeout=TIMEOUT, writeTimeout=TIMEOUT, onReceive=self._onReceive)
                 self.vp_query_modules()
-                for i in range(10): # wait for dev arrival
+                for i in range(30): # wait for dev arrival
                     self._dev.waitForRead(TIMEOUT)
                     if self.numCells:
                         break
                     else:
-                        log.error("Device arrival timeout")
+                        log.info("Device arrival timeout")
         except Exception as e:
             log.error(e)
             raise RuntimeError("No BAUM VarioPro display found")
@@ -633,7 +634,7 @@ class BrailleDisplayDriver(braille.BrailleDisplayDriver):
             "kb:numpad7": ("br(baumVarioPro):tmk7",),
             "kb:numpad8": ("br(baumVarioPro):tmk8",),
             "kb:numpad9": ("br(baumVarioPro):tmk9",),
-            "kb:numpad0": ("br(baumVarioPro):tmk0",),
+            "kb:numpadInsert": ("br(baumVarioPro):tmk0",),
             "kb:numpadMultiply": ("br(baumVarioPro):tmk*",),
             "kb:numpadDivide": ("br(baumVarioPro):tmk#",),
             "sayAll": ("br(baumVarioPro):d1+d2+d3",),
