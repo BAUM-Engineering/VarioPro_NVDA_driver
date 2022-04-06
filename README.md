@@ -17,6 +17,9 @@ This is mainly due to the fact that VarioPro has also additional connectible mod
 * Connect the VarioPro device to the computer.
 * Go to Settings  and under the Braille section change the Braille display to "Baum VarioPro braille displays".
 
+## New in version from 2022.04.06
+1. Modified the driver addon to work with NVDA 2022.1 and above.
+
 ## New in version from 2021.07.21
 1. Modified the driver addon to work with NVDA 2021.1 and above.
 2. Fixed a bug that made the driver crash if a non assigned device keys combination is pressed.
